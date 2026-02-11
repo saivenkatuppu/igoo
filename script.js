@@ -123,5 +123,60 @@ function createBalloons() {
     }
 }
 
+// Playful "No" Button Logic
+const noBtn = document.getElementById('no-btn');
+const yesBtn = document.getElementById('btn-3');
+
+const noTexts = [
+    "Are you sure?",
+    "Really sure?",
+    "Think again!",
+    "Don't be rude!",
+    "Just click Yes!",
+    "I'll be sad...",
+    "Last chance!",
+    "Okay fine..."
+];
+
+let clickCount = 0;
+
+noBtn.addEventListener('click', (e) => {
+    // Prevent meaningful click, just trigger the playfulness
+    e.preventDefault();
+    moveButton();
+});
+
+noBtn.addEventListener('mouseover', () => {
+    // Also move on hover for desktop annoy-factor (playful)
+    moveButton();
+});
+
+function moveButton() {
+    clickCount++;
+
+    // 1. Change Text
+    if (clickCount < noTexts.length) {
+        noBtn.innerText = noTexts[clickCount];
+    } else {
+        noBtn.innerText = "Okay fine... 🙈";
+        noBtn.style.display = 'none'; // Give up eventually
+    }
+
+    // 2. Make Yes Button Bigger
+    const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+    const currentPadding = parseFloat(window.getComputedStyle(yesBtn).paddingTop);
+
+    yesBtn.style.fontSize = `${currentSize * 1.2}px`;
+    yesBtn.style.padding = `${currentPadding * 1.2}px ${currentPadding * 2.5}px`;
+
+    // 3. Move No Button Randomly
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+}
+
 // Initial Balloon Start
 createBalloons();
