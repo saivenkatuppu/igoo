@@ -256,18 +256,35 @@ button.glow {
 }
 
 /* Silhouette Walking Animation (CSS Only) */
+/* Animation Keyframes */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-up {
+    animation: fadeUp 1s ease-out forwards;
+}
+
+/* Updated Walker Visibility */
 .walker {
     width: 60px;
     height: 100px;
-    /* Simplified representation */
-    background: rgba(90, 78, 140, 0.1);
-    /* Very subtle silhouette color */
+    background: rgba(90, 78, 140, 0.4);
+    /* Increased opacity from 0.1 to 0.4 */
     position: absolute;
     bottom: 20px;
-    /* Depending on footer */
     border-radius: 40% 40% 0 0;
-    /* Just abstract shapes */
     animation: walkAcross 30s linear infinite;
+    z-index: 2;
+    /* Bring it slightly forward but behind buttons if needed */
 }
 
 .walker.boy {
@@ -279,12 +296,10 @@ button.glow {
 
 .walker.girl {
     left: -60px;
-    /* Lag behind slightly */
     height: 100px;
     width: 45px;
     border-radius: 50% 50% 0 0;
     animation-delay: 0.1s;
-    /* Slight sync difference */
 }
 
 @keyframes walkAcross {
@@ -297,6 +312,26 @@ button.glow {
     }
 }
 
+/* Screen Layout Update for Mobile Safety */
+.screen {
+    position: absolute;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* keep center but add padding */
+    padding: 60px 20px;
+    /* Add vertical padding to prevent top cropping */
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transform: translateY(20px);
+    z-index: 10;
+}
+
 /* Playful Buttons */
 .button-container {
     display: flex;
@@ -306,29 +341,24 @@ button.glow {
     margin-top: 20px;
     position: relative;
     min-height: 80px;
-    /* Space for moving button */
 }
 
 .yes-btn {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /* Bouncy growth */
     z-index: 100;
 }
 
 .no-btn {
     background: #FF69B4;
-    /* Match theme but maybe lighter/different */
     font-size: 1rem;
     padding: 10px 20px;
     opacity: 0.8;
     transition: all 0.2s ease;
     position: relative;
-    /* Starts strictly next to Yes, then becomes absolute if needed */
 }
 
 .no-btn:hover {
     background: #ff4d4d;
-    /* Slight warning red */
 }
 
 @media (max-width: 600px) {
@@ -352,5 +382,11 @@ button.glow {
     .subtitle {
         font-size: 1.1rem;
         padding: 0 15px;
+    }
+
+    /* Ensure walker is small on mobile */
+    .walker {
+        transform: scale(0.7);
+        transform-origin: bottom center;
     }
 }
