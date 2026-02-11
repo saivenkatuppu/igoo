@@ -12,6 +12,7 @@
 
     --font-heading: 'Dancing Script', cursive;
     --font-body: 'Outfit', sans-serif;
+    --font-kannada: 'Noto Sans Kannada', sans-serif;
 }
 
 body {
@@ -27,6 +28,31 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    /* Prevent default touch behaviors */
+    touch-action: manipulation;
+}
+
+/* Background Layers */
+#balloon-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#walking-animation {
+    position: fixed;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
 }
 
 /* Base Typography */
@@ -35,30 +61,66 @@ h1 {
     font-size: 3.5rem;
     color: var(--text-primary);
     text-shadow: 2px 2px 0px var(--accent-lavender);
-    margin-bottom: 0.5em;
+    margin-bottom: 0.3em;
     padding: 0 10px;
+    position: relative;
+    z-index: 5;
 }
 
 .subtitle {
     font-size: 1.4rem;
     color: #666;
     margin-bottom: 2em;
+    font-weight: 300;
+    position: relative;
+    z-index: 5;
 }
 
-/* Image Cards and Captions */
+/* Screen Transitions */
+.screen {
+    position: absolute;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transform: translateY(20px);
+    z-index: 10;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.hidden {
+    opacity: 0;
+    /* Ensure hidden sections are invisible */
+    pointer-events: none;
+}
+
+/* Photo Cards */
 .photo-card {
     background: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(90, 78, 140, 0.15);
     max-width: 90%;
-    width: 400px;
-    margin: 0 auto 30px;
+    width: 350px;
+    margin: 0 auto 20px;
+    transform: rotate(-2deg);
     transition: transform 0.3s ease;
 }
 
 .photo-card:hover {
-    transform: translateY(-5px);
+    transform: rotate(0deg) scale(1.02);
 }
 
 .featured-img {
@@ -66,61 +128,39 @@ h1 {
     height: auto;
     border-radius: 15px;
     object-fit: cover;
-    max-height: 70vh;
-    /* Ensure images don't overflow on mobile */
+    max-height: 60vh;
 }
 
 .paper-img {
-    filter: sepia(0.3);
-    /* Slight vintage feel for the paper image */
-    border: 3px solid var(--accent-gold);
+    filter: sepia(0.4) contrast(1.1);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.caption {
-    font-size: 1.5rem;
+.final-card {
+    transform: rotate(2deg);
+}
+
+/* Text Styling */
+.kannada-text {
+    font-family: var(--font-kannada);
+    font-size: 1.4rem;
     color: var(--text-primary);
-    margin-top: 15px;
-    font-family: var(--font-heading);
+    margin: 10px 0 5px;
+    font-weight: 600;
 }
 
-.final-title {
-    font-family: var(--font-heading);
-    color: var(--text-primary);
-    font-size: 2.2rem;
-    margin-top: 20px;
-}
-
-.final-text {
-    font-size: 1.2rem;
-    line-height: 1.6;
+.english-sub {
+    font-size: 1.1rem;
     color: #555;
+    margin-bottom: 5px;
+    font-style: italic;
 }
 
-/* Screen Transitions */
-.screen {
-    position: absolute;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
-    transform: translateY(20px);
-}
-
-.screen.active {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-    z-index: 10;
-}
-
-.hidden {
-    display: none;
-    /* Just keep hidden class available if needed for logic, but opacity handles visuals */
+.english-sub.light {
+    font-weight: 300;
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 25px;
 }
 
 /* Buttons */
@@ -128,16 +168,16 @@ button {
     background: var(--btn-color);
     color: white;
     font-family: var(--font-body);
-    font-size: 1.3rem;
-    padding: 15px 40px;
+    font-size: 1.2rem;
+    padding: 14px 35px;
     border: none;
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
     transition: transform 0.2s, background 0.3s;
-    margin-top: 10px;
-    z-index: 100;
-    /* Ensure clickable */
+    margin-top: 15px;
+    position: relative;
+    z-index: 20;
 }
 
 button:hover {
@@ -163,6 +203,7 @@ button.glow {
     }
 }
 
+
 /* Confetti Canvas */
 #confetti-canvas {
     position: fixed;
@@ -171,8 +212,91 @@ button.glow {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 999;
+    z-index: 50;
+    /* Above everything */
 }
+
+/* Balloon Animation (CSS Only for now, enhanced by JS) */
+.balloon {
+    position: absolute;
+    bottom: -100px;
+    width: 50px;
+    height: 60px;
+    background: var(--accent-pink);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: floatUp 15s linear infinite;
+}
+
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 10px;
+    background: inherit;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Silhouette Walking Animation (CSS Only) */
+.walker {
+    width: 60px;
+    height: 100px;
+    /* Simplified representation */
+    background: rgba(90, 78, 140, 0.1);
+    /* Very subtle silhouette color */
+    position: absolute;
+    bottom: 20px;
+    /* Depending on footer */
+    border-radius: 40% 40% 0 0;
+    /* Just abstract shapes */
+    animation: walkAcross 30s linear infinite;
+}
+
+.walker.boy {
+    left: -100px;
+    height: 110px;
+    width: 45px;
+    animation-delay: 0s;
+}
+
+.walker.girl {
+    left: -60px;
+    /* Lag behind slightly */
+    height: 100px;
+    width: 45px;
+    border-radius: 50% 50% 0 0;
+    animation-delay: 0.1s;
+    /* Slight sync difference */
+}
+
+@keyframes walkAcross {
+    0% {
+        transform: translateX(-10vw);
+    }
+
+    100% {
+        transform: translateX(110vw);
+    }
+}
+
 
 /* Mobile Adjustments */
 @media (max-width: 600px) {
@@ -180,17 +304,21 @@ button.glow {
         font-size: 2.5rem;
     }
 
-    .caption {
-        font-size: 1.3rem;
-    }
-
     .photo-card {
         width: 85%;
-        padding: 15px;
+    }
+
+    .kannada-text {
+        font-size: 1.2rem;
     }
 
     button {
         padding: 12px 30px;
         font-size: 1.1rem;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        padding: 0 15px;
     }
 }

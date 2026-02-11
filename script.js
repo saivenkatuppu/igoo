@@ -12,42 +12,45 @@ const buttons = {
     btn3: document.getElementById('btn-3')
 };
 
-// State Management
+// Transition Logic
 function switchSection(hideSection, showSection) {
-    // 1. Hide current section
-    hideSection.classList.remove('active');
-    hideSection.classList.add('hidden'); // Use hidden class to remove from layout if needed, but opacity handles visual
+    if (!hideSection || !showSection) return;
 
-    // 2. Wait a tiny bit (for CSS transition) then show next
+    hideSection.classList.remove('active');
+    hideSection.style.opacity = '0';
+
     setTimeout(() => {
+        hideSection.classList.add('hidden');
         showSection.classList.remove('hidden');
-        // Trigger reflow for animation to work
+
+        // Reflow
         void showSection.offsetWidth;
+
+        showSection.style.opacity = '1';
         showSection.classList.add('active');
-    }, 100); // Short delay for smooth feel
+    }, 800);
 }
 
 // Event Listeners
-
-// 1. Start Button -> To Photo 1
 buttons.btn1.addEventListener('click', () => {
     switchSection(stages.first, stages.second);
 });
 
-// 2. See Next -> To Photo 2
 buttons.btn2.addEventListener('click', () => {
     switchSection(stages.second, stages.third);
 });
 
-// 3. One Last Thing -> To Final Paper Reveal
+
 buttons.btn3.addEventListener('click', () => {
     switchSection(stages.third, stages.final);
-    // Start confetti when final section appears
+    // Stop balloons
+    document.getElementById('balloon-container').style.display = 'none';
+    // Start confetti
     setTimeout(startConfetti, 500);
 });
 
 
-// Confetti Logic (Simple Canvas Implementation)
+// Confetti Logic
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
 let confettiParticles = [];
@@ -70,26 +73,25 @@ function startConfetti() {
 function createParticle() {
     return {
         x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height, // Start above screen
+        y: Math.random() * canvas.height - canvas.height,
         size: Math.random() * 5 + 5,
-        color: `hsl(${Math.random() * 360}, 100%, 75%)`,
-        speedY: Math.random() * 3 + 2,
+        color: `hsl(${Math.random() * 360}, 90%, 75%)`,
+        speedY: Math.random() * 2 + 1,
         speedX: Math.random() * 2 - 1,
         rotation: Math.random() * 360,
-        rotationSpeed: Math.random() * 10 - 5
+        rotationSpeed: Math.random() * 5 - 2.5
     };
 }
 
 function animateConfetti() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    confettiParticles.forEach((p, index) => {
+    confettiParticles.forEach((p) => {
         p.y += p.speedY;
-        p.x += p.speedX; // Add slight drift
+        p.x += p.speedX;
         p.rotation += p.rotationSpeed;
 
         if (p.y > canvas.height) {
-            // Reset to top to keep it raining gentle
             p.y = -10;
             p.x = Math.random() * canvas.width;
         }
@@ -104,3 +106,22 @@ function animateConfetti() {
 
     requestAnimationFrame(animateConfetti);
 }
+
+// Generate Simple CSS Balloons
+function createBalloons() {
+    const container = document.getElementById('balloon-container');
+    const colors = ['#FFC0CB', '#E6E6FA', '#FFD700', '#ADD8E6'];
+
+    for (let i = 0; i < 15; i++) {
+        const balloon = document.createElement('div');
+        balloon.className = 'balloon';
+        balloon.style.left = `${Math.random() * 100}vw`;
+        balloon.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        balloon.style.opacity = Math.random() * 0.4 + 0.2; // Translucent
+        container.appendChild(balloon);
+    }
+}
+
+// Initial Balloon Start
+createBalloons();
